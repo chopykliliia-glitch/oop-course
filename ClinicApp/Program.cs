@@ -1,7 +1,7 @@
 ﻿using ClinicApp;
 
 PatientManager patientManager = new PatientManager();
-DoctorManager DoctorManager = new DoctorManager();
+DoctorManager doctorManager = new DoctorManager();
 
 patientManager.Add(new Patient(
     "Іван",
@@ -26,12 +26,43 @@ patientManager.Add(new Patient(
 
 patientManager.Add(new Patient("Марія", "Ткач"));
 
+Doctor doctor1 = new Doctor(
+    "Олег",
+    "Сидоренко",
+    "Кардіологія",
+    "LIC-001",
+    "0441234567");
+
+Doctor doctor2 = new Doctor(
+    "Наталія",
+    "Мороз",
+    "Неврологія",
+    "LIC-002",
+    "0442345678");
+
+Doctor doctor3 = new Doctor(
+    "Андрій",
+    "Власенко",
+    "Педіатрія",
+    "LIC-003",
+    "0443456789");
+
+doctor1.WorkEndHour = 16;
+doctor2.WorkStartHour = 9;
+doctor2.WorkEndHour = 18;
+
+doctorManager.Add(doctor1);
+doctorManager.Add(doctor2);
+doctorManager.Add(doctor3);
+
+
 while (true)
 {
     Console.WriteLine();
     Console.WriteLine("========== КЛІНІКА ==========");
     Console.WriteLine("1 — Пацієнти");
     Console.WriteLine("2 — Лікарі");
+    Console.WriteLine("3 — Записи");
     Console.WriteLine("0 — Вихід");
     Console.WriteLine("==============================");
     Console.Write("Ваш вибір: ");
@@ -44,7 +75,11 @@ while (true)
     }
     else if (choice == "2")
     {
-        DoctorMenu(DoctorManager);
+        DoctorMenu(doctorManager);
+    }
+    else if (choice == "3")
+    {
+        AppointmentMenu();
     }
     else if (choice == "0")
     {
@@ -155,6 +190,7 @@ static void PatientMenu(PatientManager manager)
         }
     }
 }
+
 static void DoctorMenu(DoctorManager manager)
 {
     while (true)
@@ -300,6 +336,85 @@ static void DoctorMenu(DoctorManager manager)
                     Console.WriteLine(doctors[i]);
                 }
             }
+        }
+        else if (choice == "0")
+        {
+            break;
+        }
+        else
+        {
+            Console.WriteLine("Невірний вибір.");
+        }
+    }
+}
+
+static void AppointmentMenu()
+{
+    Appointment appointment1 = new Appointment(
+        1,
+        1,
+        new DateTime(2026, 9, 25, 10, 0, 0),
+        30);
+
+    Appointment appointment2 = new Appointment(
+        2,
+        2,
+        new DateTime(2026, 9, 25, 11, 0, 0),
+        45);
+
+    while (true)
+    {
+        Console.WriteLine();
+        Console.WriteLine("========== ЗАПИСИ ==========");
+        Console.WriteLine("1 — Показати записи");
+        Console.WriteLine("2 — Скасувати перший запис");
+        Console.WriteLine("3 — Завершити другий запис");
+        Console.WriteLine("0 — Назад");
+        Console.WriteLine("============================");
+        Console.Write("Ваш вибір: ");
+
+        string choice = Console.ReadLine()!;
+
+        if (choice == "1")
+        {
+            Console.WriteLine();
+            Console.WriteLine("Записи:");
+
+            Console.WriteLine(appointment1);
+            Console.WriteLine(appointment2);
+        }
+        else if (choice == "2")
+        {
+            Console.Write("Причина скасування: ");
+            string reason = Console.ReadLine()!;
+
+            bool cancelled = appointment1.Cancel(reason);
+
+            if (cancelled)
+            {
+                Console.WriteLine("Запис скасовано.");
+            }
+            else
+            {
+                Console.WriteLine("Запис вже не має статус Scheduled.");
+            }
+
+            Console.WriteLine(appointment1);
+        }
+        else if (choice == "3")
+        {
+            bool completed = appointment2.Complete();
+
+            if (completed)
+            {
+                Console.WriteLine("Запис завершено.");
+            }
+            else
+            {
+                Console.WriteLine("Запис вже не має статус Scheduled.");
+            }
+
+            Console.WriteLine(appointment2);
         }
         else if (choice == "0")
         {
