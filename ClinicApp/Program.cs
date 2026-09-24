@@ -55,6 +55,8 @@ doctorManager.Add(doctor1);
 doctorManager.Add(doctor2);
 doctorManager.Add(doctor3);
 
+AppointmentManager appointmentManager =
+    new AppointmentManager(patientManager, doctorManager);
 
 while (true)
 {
@@ -79,7 +81,10 @@ while (true)
     }
     else if (choice == "3")
     {
-        AppointmentMenu();
+        AppointmentMenu(
+            appointmentManager,
+            patientManager,
+            doctorManager);
     }
     else if (choice == "0")
     {
@@ -348,27 +353,22 @@ static void DoctorMenu(DoctorManager manager)
     }
 }
 
-static void AppointmentMenu()
+static void AppointmentMenu(
+    AppointmentManager manager,
+    PatientManager patientManager,
+    DoctorManager doctorManager)
 {
-    Appointment appointment1 = new Appointment(
-        1,
-        1,
-        new DateTime(2026, 9, 25, 10, 0, 0),
-        30);
-
-    Appointment appointment2 = new Appointment(
-        2,
-        2,
-        new DateTime(2026, 9, 25, 11, 0, 0),
-        45);
-
     while (true)
     {
         Console.WriteLine();
         Console.WriteLine("========== ЗАПИСИ ==========");
-        Console.WriteLine("1 — Показати записи");
-        Console.WriteLine("2 — Скасувати перший запис");
-        Console.WriteLine("3 — Завершити другий запис");
+        Console.WriteLine("1 — Створити запис");
+        Console.WriteLine("2 — Показати всі майбутні");
+        Console.WriteLine("3 — Показати записи пацієнта");
+        Console.WriteLine("4 — Показати записи лікаря");
+        Console.WriteLine("5 — Показати записи за датою");
+        Console.WriteLine("6 — Скасувати запис");
+        Console.WriteLine("7 — Завершити запис");
         Console.WriteLine("0 — Назад");
         Console.WriteLine("============================");
         Console.Write("Ваш вибір: ");
@@ -378,43 +378,98 @@ static void AppointmentMenu()
         if (choice == "1")
         {
             Console.WriteLine();
-            Console.WriteLine("Записи:");
+            Console.WriteLine("=== Пацієнти ===");
+            patientManager.DisplayAll();
 
-            Console.WriteLine(appointment1);
-            Console.WriteLine(appointment2);
+            Console.Write("ID пацієнта: ");
+            int patientId = int.Parse(Console.ReadLine()!);
+
+            Console.WriteLine();
+            Console.WriteLine("=== Лікарі ===");
+            doctorManager.DisplayAll();
+
+            Console.Write("ID лікаря: ");
+            int doctorId = int.Parse(Console.ReadLine()!);
+
+            Console.Write("Дата та час (рррр-мм-дд гг:хх): ");
+            DateTime scheduledAt =
+                DateTime.Parse(Console.ReadLine()!);
+
+            Console.Write("Тривалість у хвилинах: ");
+            int durationMinutes =
+                int.Parse(Console.ReadLine()!);
+
+            manager.Book(
+                patientId,
+                doctorId,
+                scheduledAt,
+                durationMinutes);
         }
         else if (choice == "2")
         {
-            Console.Write("Причина скасування: ");
-            string reason = Console.ReadLine()!;
+            Console.WriteLine();
+            Console.WriteLine("=== Майбутні записи ===");
 
-            bool cancelled = appointment1.Cancel(reason);
+            Appointment[] appointments =
+                manager.GetUpcoming();
 
-            if (cancelled)
-            {
-                Console.WriteLine("Запис скасовано.");
-            }
-            else
-            {
-                Console.WriteLine("Запис вже не має статус Scheduled.");
-            }
-
-            Console.WriteLine(appointment1);
+            manager.DisplayList(appointments);
         }
         else if (choice == "3")
         {
-            bool completed = appointment2.Complete();
+            Console.WriteLine();
+            Console.WriteLine("=== Пацієнти ===");
+            patientManager.DisplayAll();
 
-            if (completed)
-            {
-                Console.WriteLine("Запис завершено.");
-            }
-            else
-            {
-                Console.WriteLine("Запис вже не має статус Scheduled.");
-            }
+            Console.Write("ID пацієнта: ");
+            int patientId = int.Parse(Console.ReadLine()!);
 
-            Console.WriteLine(appointment2);
+            Appointment[] appointments =
+                manager.GetByPatient(patientId);
+
+            manager.DisplayList(appointments);
+        }
+        else if (choice == "4")
+        {
+            Console.WriteLine();
+            Console.WriteLine("=== Лікарі ===");
+            doctorManager.DisplayAll();
+
+            Console.Write("ID лікаря: ");
+            int doctorId = int.Parse(Console.ReadLine()!);
+
+            Appointment[] appointments =
+                manager.GetByDoctor(doctorId);
+
+            manager.DisplayList(appointments);
+        }
+        else if (choice == "5")
+        {
+            Console.Write("Дата (рррр-мм-дд): ");
+            DateTime date =
+                DateTime.Parse(Console.ReadLine()!);
+
+            Appointment[] appointments =
+                manager.GetByDate(date);
+
+            manager.DisplayList(appointments);
+        }
+        else if (choice == "6")
+        {
+            Console.Write("ID запису: ");
+            int id = int.Parse(Console.ReadLine()!);
+
+            Console.Write("Причина скасування: ");
+            string reason = Console.ReadLine()!;
+
+            manager.Cancel(id, reason);
+        }
+        else if (choice == "7")
+        {
+            Console.Write("ID запису: ");
+            int id = int.Parse(Console.ReadLine()!);
+
+            manager.Complete(id);
         }
         else if (choice == "0")
         {
