@@ -56,7 +56,7 @@ public static class ClinicFormatter
 
         return "Невідома спеціальність";
     }
-
+    
     public static string FormatAge(int age)
     {
         int lastTwoDigits = age % 100;
@@ -80,6 +80,11 @@ public static class ClinicFormatter
 
         return $"{age} років";
     }
+    
+    public static string FormatAge(Patient patient)
+    {
+        return FormatAge(patient.Age);
+    }
 
     public static string FormatPhone(string phone)
     {
@@ -99,5 +104,40 @@ public static class ClinicFormatter
         return $"({phone.Substring(0, 3)}) " +
                $"{phone.Substring(3, 3)}-" +
                $"{phone.Substring(6, 4)}";
+    }
+    
+    public static bool TryParsePhone(
+        string phone,
+        out string formattedPhone)
+    {
+        formattedPhone = FormatPhone(phone);
+
+        if (phone.Length != 10)
+        {
+            formattedPhone = "";
+            return false;
+        }
+
+        for (int i = 0; i < phone.Length; i++)
+        {
+            if (!char.IsDigit(phone[i]))
+            {
+                formattedPhone = "";
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    public static bool TryGetAgeInfo(
+        Patient patient,
+        out int age,
+        out string category)
+    {
+        age = patient.Age;
+        category = patient.GetAgeCategory();
+
+        return true;
     }
 }

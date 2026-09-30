@@ -84,6 +84,7 @@ while (true)
     Console.WriteLine("5 — Звіт");
     Console.WriteLine("6 — Тест зростаючого масиву");
     Console.WriteLine("7 — Тест Task 03");
+    Console.WriteLine("8 — Тест Task 04");
     Console.WriteLine("0 — Вихід");
     Console.WriteLine("==============================");
     Console.Write("Ваш вибір: ");
@@ -122,6 +123,10 @@ while (true)
     else if (choice == "7")
     {
         Task03Test(clinic);
+    }
+    else if (choice == "8")
+    {
+        Task04Test(clinic);
     }
     else if (choice == "0")
     {
@@ -724,6 +729,68 @@ static void Task03Test(Clinic clinic)
         "Телефон: " +
         ClinicFormatter.FormatPhone(
             "0501234567"));
+
+    Console.WriteLine();
+    Console.WriteLine("==================================");
+}
+static void Task04Test(Clinic clinic)
+{
+    Console.WriteLine();
+    Console.WriteLine("========== ТЕСТ TASK 04 ==========");
+
+    Console.WriteLine();
+    Console.WriteLine("--- Перевантаження FormatAge ---");
+
+    Patient? patient = clinic.Patients[0];
+
+    if (patient != null)
+    {
+        Console.WriteLine(
+            "FormatAge(int): " +
+            ClinicFormatter.FormatAge(patient.Age));
+
+        Console.WriteLine(
+            "FormatAge(Patient): " +
+            ClinicFormatter.FormatAge(patient));
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("--- Метод TryParsePhone з out ---");
+
+    string phone = "0501234567";
+
+    if (ClinicFormatter.TryParsePhone(
+            phone,
+            out string formattedPhone))
+    {
+        Console.WriteLine(
+            $"Телефон {phone} → {formattedPhone}");
+    }
+    else
+    {
+        Console.WriteLine("Некоректний телефон.");
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("--- Метод TryGetAgeInfo з двома out ---");
+
+    if (patient != null)
+    {
+        if (ClinicFormatter.TryGetAgeInfo(
+                patient,
+                out int age,
+                out string category))
+        {
+            Console.WriteLine(
+                $"Пацієнт: {patient.FullName}");
+
+            Console.WriteLine(
+                $"Вік: {age}");
+
+            Console.WriteLine(
+                $"Категорія: {category}");
+        }
+    }
 
     Console.WriteLine();
     Console.WriteLine("==================================");
