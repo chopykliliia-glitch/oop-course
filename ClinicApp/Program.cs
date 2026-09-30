@@ -83,6 +83,7 @@ while (true)
     Console.WriteLine("4 — Розклад");
     Console.WriteLine("5 — Звіт");
     Console.WriteLine("6 — Тест зростаючого масиву");
+    Console.WriteLine("7 — Тест Task 03");
     Console.WriteLine("0 — Вихід");
     Console.WriteLine("==============================");
     Console.Write("Ваш вибір: ");
@@ -105,7 +106,8 @@ while (true)
     {
         Console.Write("Дата (рррр-мм-дд): ");
 
-        DateTime date = DateTime.Parse(Console.ReadLine()!);
+        DateTime date =
+            DateTime.Parse(Console.ReadLine()!);
 
         clinic.DisplaySchedule(date);
     }
@@ -116,6 +118,10 @@ while (true)
     else if (choice == "6")
     {
         GrowablePatientTest();
+    }
+    else if (choice == "7")
+    {
+        Task03Test(clinic);
     }
     else if (choice == "0")
     {
@@ -158,6 +164,7 @@ static void PatientMenu(Clinic clinic)
             string lastName = Console.ReadLine()!;
 
             Console.Write("Дата народження (рррр-мм-дд): ");
+
             DateTime dateOfBirth =
                 DateTime.Parse(Console.ReadLine()!);
 
@@ -232,9 +239,12 @@ static void PatientMenu(Clinic clinic)
         else if (choice == "4")
         {
             Console.Write("Введіть ID пацієнта: ");
-            int id = int.Parse(Console.ReadLine()!);
 
-            bool removed = clinic.Patients.Remove(id);
+            int id =
+                int.Parse(Console.ReadLine()!);
+
+            bool removed =
+                clinic.Patients.Remove(id);
 
             if (removed)
             {
@@ -242,7 +252,8 @@ static void PatientMenu(Clinic clinic)
             }
             else
             {
-                Console.WriteLine("Пацієнта з таким ID не знайдено.");
+                Console.WriteLine(
+                    "Пацієнта з таким ID не знайдено.");
             }
         }
         else if (choice == "5")
@@ -301,7 +312,8 @@ static void DoctorMenu(Clinic clinic)
             Console.WriteLine("7 — Therapist");
             Console.Write("Ваш вибір: ");
 
-            string specialityChoice = Console.ReadLine()!;
+            string specialityChoice =
+                Console.ReadLine()!;
 
             Speciality speciality;
 
@@ -382,7 +394,8 @@ static void DoctorMenu(Clinic clinic)
             Console.WriteLine("7 — Therapist");
             Console.Write("Ваш вибір: ");
 
-            string specialityChoice = Console.ReadLine()!;
+            string specialityChoice =
+                Console.ReadLine()!;
 
             Speciality speciality;
 
@@ -424,7 +437,8 @@ static void DoctorMenu(Clinic clinic)
         {
             Console.Write("Введіть ID лікаря: ");
 
-            int id = int.Parse(Console.ReadLine()!);
+            int id =
+                int.Parse(Console.ReadLine()!);
 
             Doctor? doctor =
                 clinic.Doctors.FindById(id);
@@ -442,7 +456,8 @@ static void DoctorMenu(Clinic clinic)
         {
             Console.Write("Введіть ID лікаря: ");
 
-            int id = int.Parse(Console.ReadLine()!);
+            int id =
+                int.Parse(Console.ReadLine()!);
 
             bool removed =
                 clinic.Doctors.Remove(id);
@@ -453,7 +468,8 @@ static void DoctorMenu(Clinic clinic)
             }
             else
             {
-                Console.WriteLine("Лікаря з таким ID не знайдено.");
+                Console.WriteLine(
+                    "Лікаря з таким ID не знайдено.");
             }
         }
         else if (choice == "6")
@@ -467,7 +483,8 @@ static void DoctorMenu(Clinic clinic)
 
             if (doctors.Length == 0)
             {
-                Console.WriteLine("Список лікарів порожній.");
+                Console.WriteLine(
+                    "Список лікарів порожній.");
             }
             else
             {
@@ -638,6 +655,80 @@ static void AppointmentMenu(Clinic clinic)
     }
 }
 
+static void Task03Test(Clinic clinic)
+{
+    Console.WriteLine();
+    Console.WriteLine("========== ТЕСТ TASK 03 ==========");
+
+    Console.WriteLine();
+    Console.WriteLine("--- Індексатор PatientManager ---");
+
+    Patient? patient = clinic.Patients[0];
+
+    if (patient == null)
+    {
+        Console.WriteLine("Пацієнта не знайдено.");
+    }
+    else
+    {
+        Console.WriteLine(patient);
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("--- Індексатор DoctorManager ---");
+
+    Doctor? doctor = clinic.Doctors[0];
+
+    if (doctor == null)
+    {
+        Console.WriteLine("Лікаря не знайдено.");
+    }
+    else
+    {
+        Console.WriteLine(doctor);
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("--- Індексатор AppointmentManager ---");
+
+    Appointment? appointment = clinic.Appointments[0];
+
+    if (appointment == null)
+    {
+        Console.WriteLine("Запис не знайдено.");
+    }
+    else
+    {
+        clinic.Appointments.DisplayAppointment(
+            appointment);
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("--- ClinicFormatter ---");
+
+    Console.WriteLine(
+        "Група крові: " +
+        ClinicFormatter.FormatBloodType(
+            BloodType.APositive));
+
+    Console.WriteLine(
+        "Спеціальність: " +
+        ClinicFormatter.FormatSpeciality(
+            Speciality.Cardiologist));
+
+    Console.WriteLine(
+        "Вік: " +
+        ClinicFormatter.FormatAge(21));
+
+    Console.WriteLine(
+        "Телефон: " +
+        ClinicFormatter.FormatPhone(
+            "0501234567"));
+
+    Console.WriteLine();
+    Console.WriteLine("==================================");
+}
+
 static void GrowablePatientTest()
 {
     GrowablePatientManager manager =
@@ -664,14 +755,16 @@ static void GrowablePatientTest()
     Patient? found = manager.FindById(10);
 
     if (found == null)
-        Console.WriteLine("Пацієнта з ID 10 не знайдено.");
+        Console.WriteLine(
+            "Пацієнта з ID 10 не знайдено.");
     else
         Console.WriteLine($"Знайдено: {found}");
 
     found = manager.FindById(99);
 
     if (found == null)
-        Console.WriteLine("Пацієнта з ID 99 не знайдено.");
+        Console.WriteLine(
+            "Пацієнта з ID 99 не знайдено.");
     else
         Console.WriteLine($"Знайдено: {found}");
 
