@@ -8,12 +8,11 @@ public class Doctor
 
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string Speciality { get; set; }
+    public Speciality Speciality { get; set; }
     public string LicenseNumber { get; set; }
     public string Phone { get; set; }
 
-    public int WorkStartHour { get; set; }
-    public int WorkEndHour { get; set; }
+    public WorkSchedule Schedule { get; set; }
 
     public string FullName
     {
@@ -27,7 +26,7 @@ public class Doctor
     {
         get
         {
-            return WorkEndHour - WorkStartHour;
+            return Schedule.HoursPerDay;
         }
     }
 
@@ -35,7 +34,7 @@ public class Doctor
     {
         get
         {
-            return $"{WorkStartHour:D2}:00–{WorkEndHour:D2}:00";
+            return Schedule.Display;
         }
     }
 
@@ -43,24 +42,37 @@ public class Doctor
     {
         get
         {
-            return CanAcceptAt(DateTime.Now.Hour);
+            return Schedule.IsNow;
         }
     }
 
     public Doctor()
-        : this("Невідомий", "Лікар", "Невідомо", "N/A", "0000000000")
-    {
-    }
-
-    public Doctor(string firstName, string lastName, string speciality)
-        : this(firstName, lastName, speciality, "N/A", "0000000000")
+        : this(
+            "Невідомий",
+            "Лікар",
+            Speciality.Unknown,
+            "N/A",
+            "0000000000")
     {
     }
 
     public Doctor(
         string firstName,
         string lastName,
-        string speciality,
+        Speciality speciality)
+        : this(
+            firstName,
+            lastName,
+            speciality,
+            "N/A",
+            "0000000000")
+    {
+    }
+
+    public Doctor(
+        string firstName,
+        string lastName,
+        Speciality speciality,
         string licenseNumber,
         string phone)
     {
@@ -72,13 +84,12 @@ public class Doctor
         LicenseNumber = licenseNumber;
         Phone = phone;
 
-        WorkStartHour = 8;
-        WorkEndHour = 17;
+        Schedule = new WorkSchedule(8, 17);
     }
 
     public bool CanAcceptAt(int hour)
     {
-        return hour >= WorkStartHour && hour < WorkEndHour;
+        return Schedule.Contains(hour);
     }
 
     public override string ToString()
