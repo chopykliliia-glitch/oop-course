@@ -8,7 +8,7 @@ public class Doctor
 
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string Speciality { get; set; }
+    public Speciality Speciality { get; set; }
     public string LicenseNumber { get; set; }
     public string Phone { get; set; }
 
@@ -48,19 +48,32 @@ public class Doctor
     }
 
     public Doctor()
-        : this("Невідомий", "Лікар", "Невідомо", "N/A", "0000000000")
-    {
-    }
-
-    public Doctor(string firstName, string lastName, string speciality)
-        : this(firstName, lastName, speciality, "N/A", "0000000000")
+        : this(
+            "Невідомий",
+            "Лікар",
+            Speciality.Unknown,
+            "N/A",
+            "0000000000")
     {
     }
 
     public Doctor(
         string firstName,
         string lastName,
-        string speciality,
+        Speciality speciality)
+        : this(
+            firstName,
+            lastName,
+            speciality,
+            "N/A",
+            "0000000000")
+    {
+    }
+
+    public Doctor(
+        string firstName,
+        string lastName,
+        Speciality speciality,
         string licenseNumber,
         string phone)
     {
