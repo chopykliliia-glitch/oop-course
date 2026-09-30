@@ -1,5 +1,4 @@
-﻿
-using ClinicApp;
+﻿using ClinicApp;
 
 Clinic clinic = new Clinic("Медична Клініка");
 
@@ -173,39 +172,7 @@ static void PatientMenu(Clinic clinic)
             DateTime dateOfBirth =
                 DateTime.Parse(Console.ReadLine()!);
 
-            Console.WriteLine("Група крові:");
-            Console.WriteLine("1 — A+");
-            Console.WriteLine("2 — A-");
-            Console.WriteLine("3 — B+");
-            Console.WriteLine("4 — B-");
-            Console.WriteLine("5 — O+");
-            Console.WriteLine("6 — O-");
-            Console.WriteLine("7 — AB+");
-            Console.WriteLine("8 — AB-");
-            Console.Write("Ваш вибір: ");
-
-            string bloodChoice = Console.ReadLine()!;
-
-            BloodType bloodType;
-
-            if (bloodChoice == "1")
-                bloodType = BloodType.APositive;
-            else if (bloodChoice == "2")
-                bloodType = BloodType.ANegative;
-            else if (bloodChoice == "3")
-                bloodType = BloodType.BPositive;
-            else if (bloodChoice == "4")
-                bloodType = BloodType.BNegative;
-            else if (bloodChoice == "5")
-                bloodType = BloodType.OPositive;
-            else if (bloodChoice == "6")
-                bloodType = BloodType.ONegative;
-            else if (bloodChoice == "7")
-                bloodType = BloodType.ABPositive;
-            else if (bloodChoice == "8")
-                bloodType = BloodType.ABNegative;
-            else
-                bloodType = BloodType.OPositive;
+            BloodType bloodType = ReadBloodType();
 
             Console.Write("Телефон: ");
             string phone = Console.ReadLine()!;
@@ -307,40 +274,7 @@ static void DoctorMenu(Clinic clinic)
             Console.Write("Прізвище: ");
             string lastName = Console.ReadLine()!;
 
-            Console.WriteLine("Спеціальність:");
-            Console.WriteLine("1 — General");
-            Console.WriteLine("2 — Cardiology");
-            Console.WriteLine("3 — Neurology");
-            Console.WriteLine("4 — Pediatrics");
-            Console.WriteLine("5 — Surgery");
-            Console.WriteLine("6 — Orthopedics");
-            Console.WriteLine("7 — Dermatology");
-            Console.WriteLine("8 — Emergency");
-            Console.Write("Ваш вибір: ");
-
-            string specialityChoice =
-                Console.ReadLine()!;
-
-            Speciality speciality;
-
-            if (specialityChoice == "1")
-                speciality = Speciality.General;
-            else if (specialityChoice == "2")
-                speciality = Speciality.Cardiology;
-            else if (specialityChoice == "3")
-                speciality = Speciality.Neurology;
-            else if (specialityChoice == "4")
-                speciality = Speciality.Pediatrics;
-            else if (specialityChoice == "5")
-                speciality = Speciality.Surgery;
-            else if (specialityChoice == "6")
-                speciality = Speciality.Orthopedics;
-            else if (specialityChoice == "7")
-                speciality = Speciality.Dermatology;
-            else if (specialityChoice == "8")
-                speciality = Speciality.Emergency;
-            else
-                speciality = Speciality.General;
+            Speciality speciality = ReadSpeciality();
 
             Console.Write("Номер ліцензії: ");
             string licenseNumber = Console.ReadLine()!;
@@ -392,40 +326,7 @@ static void DoctorMenu(Clinic clinic)
         }
         else if (choice == "3")
         {
-            Console.WriteLine("Спеціальність:");
-            Console.WriteLine("1 — General");
-            Console.WriteLine("2 — Cardiology");
-            Console.WriteLine("3 — Neurology");
-            Console.WriteLine("4 — Pediatrics");
-            Console.WriteLine("5 — Surgery");
-            Console.WriteLine("6 — Orthopedics");
-            Console.WriteLine("7 — Dermatology");
-            Console.WriteLine("8 — Emergency");
-            Console.Write("Ваш вибір: ");
-
-            string specialityChoice =
-                Console.ReadLine()!;
-
-            Speciality speciality;
-
-            if (specialityChoice == "1")
-                speciality = Speciality.General;
-            else if (specialityChoice == "2")
-                speciality = Speciality.Cardiology;
-            else if (specialityChoice == "3")
-                speciality = Speciality.Neurology;
-            else if (specialityChoice == "4")
-                speciality = Speciality.Pediatrics;
-            else if (specialityChoice == "5")
-                speciality = Speciality.Surgery;
-            else if (specialityChoice == "6")
-                speciality = Speciality.Orthopedics;
-            else if (specialityChoice == "7")
-                speciality = Speciality.Dermatology;
-            else if (specialityChoice == "8")
-                speciality = Speciality.Emergency;
-            else
-                speciality = Speciality.General;
+            Speciality speciality = ReadSpeciality();
 
             Doctor[] found =
                 clinic.Doctors.FindBySpeciality(speciality);
@@ -801,8 +702,8 @@ static void Task04Test(Clinic clinic)
     Appointment[] appointments =
         clinic.Appointments.GetByDate(
             2026,
-            5,
-            10);
+            9,
+            25);
 
     clinic.Appointments.DisplayList(
         appointments);
@@ -841,13 +742,15 @@ static void Task04Test(Clinic clinic)
 
     WorkSchedule copy = morning;
 
+    Console.WriteLine($"morning: {morning}");
+    Console.WriteLine($"copy:    {copy}");
+
     copy = new WorkSchedule(10, 18);
 
-    Console.WriteLine(
-        $"morning: {morning}");
-
-    Console.WriteLine(
-        $"copy:    {copy}");
+    Console.WriteLine();
+    Console.WriteLine("Після зміни copy:");
+    Console.WriteLine($"morning: {morning}");
+    Console.WriteLine($"copy:    {copy}");
 
     Console.WriteLine();
     Console.WriteLine("==================================");
@@ -895,4 +798,46 @@ static void GrowablePatientTest()
     Console.WriteLine();
     Console.WriteLine($"Кількість: {manager.Count}");
     Console.WriteLine($"Ємність: {manager.Capacity}");
+}
+
+static BloodType ReadBloodType()
+{
+    Console.WriteLine("Група крові:");
+
+    for (int i = 1; i <= 8; i++)
+    {
+        Console.WriteLine(
+            $"{i} — {ClinicFormatter.FormatBloodType((BloodType)i)}");
+    }
+
+    Console.Write("Ваш вибір: ");
+
+    if (int.TryParse(Console.ReadLine(), out int number) &&
+        number >= 1 && number <= 8)
+    {
+        return (BloodType)number;
+    }
+
+    return BloodType.Unknown;
+}
+
+static Speciality ReadSpeciality()
+{
+    Console.WriteLine("Спеціальність:");
+
+    for (int i = 1; i <= 8; i++)
+    {
+        Console.WriteLine(
+            $"{i} — {ClinicFormatter.FormatSpeciality((Speciality)(i - 1))}");
+    }
+
+    Console.Write("Ваш вибір: ");
+
+    if (int.TryParse(Console.ReadLine(), out int number) &&
+        number >= 1 && number <= 8)
+    {
+        return (Speciality)(number - 1);
+    }
+
+    return Speciality.General;
 }

@@ -58,8 +58,16 @@ public class DoctorManager
 
     public bool TryFindById(int id, out Doctor doctor)
     {
-        doctor = FindById(id);
-        return doctor != null;
+        Doctor? found = FindById(id);
+
+        if (found == null)
+        {
+            doctor = null!;
+            return false;
+        }
+
+        doctor = found;
+        return true;
     }
     
     public Doctor[] FindBySpeciality(string speciality)

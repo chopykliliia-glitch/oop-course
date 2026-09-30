@@ -57,8 +57,16 @@ public class PatientManager
     }
     public bool TryFindById(int id, out Patient patient)
     {
-        patient = FindById(id);
-        return patient != null;
+        Patient? found = FindById(id);
+
+        if (found == null)
+        {
+            patient = null!;
+            return false;
+        }
+
+        patient = found;
+        return true;
     }
     public Patient[] FindByBloodType(BloodType bloodType)
     {

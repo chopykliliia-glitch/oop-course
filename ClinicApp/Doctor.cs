@@ -107,7 +107,7 @@ public class Doctor
 
         return $"[{Id}] {FullName} | " +
                $"{ClinicFormatter.FormatSpeciality(Speciality)} | " +
-               $"{LicenseNumber} | Тел: {Phone} | " +
-               $"{WorkSchedule} ({WorkingHoursPerDay} год) | {status}";
+               $"{LicenseNumber} | Тел: {ClinicFormatter.FormatPhone(Phone)} | " +
+               $"{Schedule} | {status}";
     }
 }
