@@ -30,14 +30,6 @@ public class Doctor
         }
     }
 
-    public string WorkSchedule
-    {
-        get
-        {
-            return Schedule.Display;
-        }
-    }
-
     public bool IsAvailableNow
     {
         get
