@@ -6,21 +6,21 @@ clinic.Patients.Add(new Patient(
     "Іван",
     "Петренко",
     new DateTime(1985, 5, 10),
-    "A+",
+    BloodType.APositive,
     "0501234567"));
 
 clinic.Patients.Add(new Patient(
     "Олена",
     "Коваль",
     new DateTime(1992, 8, 15),
-    "B-",
+    BloodType.BNegative,
     "0672345678"));
 
 clinic.Patients.Add(new Patient(
     "Максим",
     "Бойко",
     new DateTime(2010, 3, 20),
-    "O+",
+    BloodType.OPositive,
     "0933456789"));
 
 clinic.Patients.Add(
@@ -29,21 +29,21 @@ clinic.Patients.Add(
 Doctor doctor1 = new Doctor(
     "Олег",
     "Сидоренко",
-    "Кардіологія",
+    Speciality.Cardiologist,
     "LIC-001",
     "0441234567");
 
 Doctor doctor2 = new Doctor(
     "Наталія",
     "Мороз",
-    "Неврологія",
+    Speciality.Neurologist,
     "LIC-002",
     "0442345678");
 
 Doctor doctor3 = new Doctor(
     "Андрій",
     "Власенко",
-    "Педіатрія",
+    Speciality.Pediatrician,
     "LIC-003",
     "0443456789");
 
@@ -106,8 +106,7 @@ while (true)
     {
         Console.Write("Дата (рррр-мм-дд): ");
 
-        DateTime date =
-            DateTime.Parse(Console.ReadLine()!);
+        DateTime date = DateTime.Parse(Console.ReadLine()!);
 
         clinic.DisplaySchedule(date);
     }
@@ -163,8 +162,39 @@ static void PatientMenu(Clinic clinic)
             DateTime dateOfBirth =
                 DateTime.Parse(Console.ReadLine()!);
 
-            Console.Write("Група крові: ");
-            string bloodType = Console.ReadLine()!;
+            Console.WriteLine("Група крові:");
+            Console.WriteLine("1 — A+");
+            Console.WriteLine("2 — A-");
+            Console.WriteLine("3 — B+");
+            Console.WriteLine("4 — B-");
+            Console.WriteLine("5 — O+");
+            Console.WriteLine("6 — O-");
+            Console.WriteLine("7 — AB+");
+            Console.WriteLine("8 — AB-");
+            Console.Write("Ваш вибір: ");
+
+            string bloodChoice = Console.ReadLine()!;
+
+            BloodType bloodType;
+
+            if (bloodChoice == "1")
+                bloodType = BloodType.APositive;
+            else if (bloodChoice == "2")
+                bloodType = BloodType.ANegative;
+            else if (bloodChoice == "3")
+                bloodType = BloodType.BPositive;
+            else if (bloodChoice == "4")
+                bloodType = BloodType.BNegative;
+            else if (bloodChoice == "5")
+                bloodType = BloodType.OPositive;
+            else if (bloodChoice == "6")
+                bloodType = BloodType.ONegative;
+            else if (bloodChoice == "7")
+                bloodType = BloodType.ABPositive;
+            else if (bloodChoice == "8")
+                bloodType = BloodType.ABNegative;
+            else
+                bloodType = BloodType.Unknown;
 
             Console.Write("Телефон: ");
             string phone = Console.ReadLine()!;
@@ -188,13 +218,11 @@ static void PatientMenu(Clinic clinic)
 
             if (found.Length == 0)
             {
-                Console.WriteLine(
-                    "Пацієнтів не знайдено.");
+                Console.WriteLine("Пацієнтів не знайдено.");
             }
             else
             {
-                Console.WriteLine(
-                    "Знайдені пацієнти:");
+                Console.WriteLine("Знайдені пацієнти:");
 
                 for (int i = 0; i < found.Length; i++)
                 {
@@ -205,21 +233,17 @@ static void PatientMenu(Clinic clinic)
         else if (choice == "4")
         {
             Console.Write("Введіть ID пацієнта: ");
-            int id =
-                int.Parse(Console.ReadLine()!);
+            int id = int.Parse(Console.ReadLine()!);
 
-            bool removed =
-                clinic.Patients.Remove(id);
+            bool removed = clinic.Patients.Remove(id);
 
             if (removed)
             {
-                Console.WriteLine(
-                    "Пацієнта видалено.");
+                Console.WriteLine("Пацієнта видалено.");
             }
             else
             {
-                Console.WriteLine(
-                    "Пацієнта з таким ID не знайдено.");
+                Console.WriteLine("Пацієнта з таким ID не знайдено.");
             }
         }
         else if (choice == "5")
@@ -232,8 +256,7 @@ static void PatientMenu(Clinic clinic)
         }
         else
         {
-            Console.WriteLine(
-                "Невірний вибір.");
+            Console.WriteLine("Невірний вибір.");
         }
     }
 }
@@ -269,12 +292,39 @@ static void DoctorMenu(Clinic clinic)
             Console.Write("Прізвище: ");
             string lastName = Console.ReadLine()!;
 
-            Console.Write("Спеціальність: ");
-            string speciality = Console.ReadLine()!;
+            Console.WriteLine("Спеціальність:");
+            Console.WriteLine("1 — Cardiologist");
+            Console.WriteLine("2 — Dentist");
+            Console.WriteLine("3 — Dermatologist");
+            Console.WriteLine("4 — Neurologist");
+            Console.WriteLine("5 — Pediatrician");
+            Console.WriteLine("6 — Surgeon");
+            Console.WriteLine("7 — Therapist");
+            Console.Write("Ваш вибір: ");
+
+            string specialityChoice = Console.ReadLine()!;
+
+            Speciality speciality;
+
+            if (specialityChoice == "1")
+                speciality = Speciality.Cardiologist;
+            else if (specialityChoice == "2")
+                speciality = Speciality.Dentist;
+            else if (specialityChoice == "3")
+                speciality = Speciality.Dermatologist;
+            else if (specialityChoice == "4")
+                speciality = Speciality.Neurologist;
+            else if (specialityChoice == "5")
+                speciality = Speciality.Pediatrician;
+            else if (specialityChoice == "6")
+                speciality = Speciality.Surgeon;
+            else if (specialityChoice == "7")
+                speciality = Speciality.Therapist;
+            else
+                speciality = Speciality.Unknown;
 
             Console.Write("Номер ліцензії: ");
-            string licenseNumber =
-                Console.ReadLine()!;
+            string licenseNumber = Console.ReadLine()!;
 
             Console.Write("Телефон: ");
             string phone = Console.ReadLine()!;
@@ -322,25 +372,47 @@ static void DoctorMenu(Clinic clinic)
         }
         else if (choice == "3")
         {
-            Console.Write(
-                "Введіть спеціальність: ");
+            Console.WriteLine("Спеціальність:");
+            Console.WriteLine("1 — Cardiologist");
+            Console.WriteLine("2 — Dentist");
+            Console.WriteLine("3 — Dermatologist");
+            Console.WriteLine("4 — Neurologist");
+            Console.WriteLine("5 — Pediatrician");
+            Console.WriteLine("6 — Surgeon");
+            Console.WriteLine("7 — Therapist");
+            Console.Write("Ваш вибір: ");
 
-            string speciality =
-                Console.ReadLine()!;
+            string specialityChoice = Console.ReadLine()!;
+
+            Speciality speciality;
+
+            if (specialityChoice == "1")
+                speciality = Speciality.Cardiologist;
+            else if (specialityChoice == "2")
+                speciality = Speciality.Dentist;
+            else if (specialityChoice == "3")
+                speciality = Speciality.Dermatologist;
+            else if (specialityChoice == "4")
+                speciality = Speciality.Neurologist;
+            else if (specialityChoice == "5")
+                speciality = Speciality.Pediatrician;
+            else if (specialityChoice == "6")
+                speciality = Speciality.Surgeon;
+            else if (specialityChoice == "7")
+                speciality = Speciality.Therapist;
+            else
+                speciality = Speciality.Unknown;
 
             Doctor[] found =
-                clinic.Doctors.FindBySpeciality(
-                    speciality);
+                clinic.Doctors.FindBySpeciality(speciality);
 
             if (found.Length == 0)
             {
-                Console.WriteLine(
-                    "Лікарів не знайдено.");
+                Console.WriteLine("Лікарів не знайдено.");
             }
             else
             {
-                Console.WriteLine(
-                    "Знайдені лікарі:");
+                Console.WriteLine("Знайдені лікарі:");
 
                 for (int i = 0; i < found.Length; i++)
                 {
@@ -352,16 +424,14 @@ static void DoctorMenu(Clinic clinic)
         {
             Console.Write("Введіть ID лікаря: ");
 
-            int id =
-                int.Parse(Console.ReadLine()!);
+            int id = int.Parse(Console.ReadLine()!);
 
             Doctor? doctor =
                 clinic.Doctors.FindById(id);
 
             if (doctor == null)
             {
-                Console.WriteLine(
-                    "Лікаря не знайдено.");
+                Console.WriteLine("Лікаря не знайдено.");
             }
             else
             {
@@ -372,21 +442,18 @@ static void DoctorMenu(Clinic clinic)
         {
             Console.Write("Введіть ID лікаря: ");
 
-            int id =
-                int.Parse(Console.ReadLine()!);
+            int id = int.Parse(Console.ReadLine()!);
 
             bool removed =
                 clinic.Doctors.Remove(id);
 
             if (removed)
             {
-                Console.WriteLine(
-                    "Лікаря видалено.");
+                Console.WriteLine("Лікаря видалено.");
             }
             else
             {
-                Console.WriteLine(
-                    "Лікаря з таким ID не знайдено.");
+                Console.WriteLine("Лікаря з таким ID не знайдено.");
             }
         }
         else if (choice == "6")
@@ -400,8 +467,7 @@ static void DoctorMenu(Clinic clinic)
 
             if (doctors.Length == 0)
             {
-                Console.WriteLine(
-                    "Список лікарів порожній.");
+                Console.WriteLine("Список лікарів порожній.");
             }
             else
             {
@@ -419,8 +485,7 @@ static void DoctorMenu(Clinic clinic)
         }
         else
         {
-            Console.WriteLine(
-                "Невірний вибір.");
+            Console.WriteLine("Невірний вибір.");
         }
     }
 }
@@ -486,10 +551,6 @@ static void AppointmentMenu(Clinic clinic)
         }
         else if (choice == "2")
         {
-            Console.WriteLine();
-            Console.WriteLine(
-                "=== Майбутні записи ===");
-
             Appointment[] appointments =
                 clinic.Appointments.GetUpcoming();
 
@@ -498,9 +559,6 @@ static void AppointmentMenu(Clinic clinic)
         }
         else if (choice == "3")
         {
-            Console.WriteLine();
-            Console.WriteLine("=== Пацієнти ===");
-
             clinic.Patients.DisplayAll();
 
             Console.Write("ID пацієнта: ");
@@ -517,9 +575,6 @@ static void AppointmentMenu(Clinic clinic)
         }
         else if (choice == "4")
         {
-            Console.WriteLine();
-            Console.WriteLine("=== Лікарі ===");
-
             clinic.Doctors.DisplayAll();
 
             Console.Write("ID лікаря: ");
@@ -536,8 +591,7 @@ static void AppointmentMenu(Clinic clinic)
         }
         else if (choice == "5")
         {
-            Console.Write(
-                "Дата (рррр-мм-дд): ");
+            Console.Write("Дата (рррр-мм-дд): ");
 
             DateTime date =
                 DateTime.Parse(Console.ReadLine()!);
@@ -555,8 +609,7 @@ static void AppointmentMenu(Clinic clinic)
             int id =
                 int.Parse(Console.ReadLine()!);
 
-            Console.Write(
-                "Причина скасування: ");
+            Console.Write("Причина скасування: ");
 
             string reason =
                 Console.ReadLine()!;
@@ -580,11 +633,11 @@ static void AppointmentMenu(Clinic clinic)
         }
         else
         {
-            Console.WriteLine(
-                "Невірний вибір.");
+            Console.WriteLine("Невірний вибір.");
         }
     }
 }
+
 static void GrowablePatientTest()
 {
     GrowablePatientManager manager =
@@ -599,7 +652,7 @@ static void GrowablePatientTest()
             "Тест",
             "Пацієнт" + i,
             new DateTime(2000, 1, 1),
-            "O+",
+            BloodType.OPositive,
             "0000000000");
 
         manager.Add(patient);
