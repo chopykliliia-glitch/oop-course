@@ -47,10 +47,9 @@ Doctor doctor3 = new Doctor(
     "LIC-003",
     "0443456789");
 
-doctor1.WorkEndHour = 16;
+doctor1.Schedule = new WorkSchedule(8, 16);
 
-doctor2.WorkStartHour = 9;
-doctor2.WorkEndHour = 18;
+doctor2.Schedule = new WorkSchedule(9, 18);
 
 clinic.Doctors.Add(doctor1);
 clinic.Doctors.Add(doctor2);
@@ -365,8 +364,9 @@ static void DoctorMenu(Clinic clinic)
                     "Введіть правильну годину від 0 до 23: ");
             }
 
-            doctor.WorkStartHour = workStartHour;
-            doctor.WorkEndHour = workEndHour;
+            doctor.Schedule = new WorkSchedule(
+                workStartHour,
+                workEndHour);
 
             clinic.Doctors.Add(doctor);
         }
