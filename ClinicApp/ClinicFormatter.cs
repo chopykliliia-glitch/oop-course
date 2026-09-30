@@ -2,61 +2,39 @@ namespace ClinicApp;
 
 public static class ClinicFormatter
 {
-    public static string FormatBloodType(BloodType bloodType)
+    public static string FormatBloodType(BloodType bt)
     {
-        if (bloodType == BloodType.APositive)
-            return "A+";
-
-        if (bloodType == BloodType.ANegative)
-            return "A-";
-
-        if (bloodType == BloodType.BPositive)
-            return "B+";
-
-        if (bloodType == BloodType.BNegative)
-            return "B-";
-
-        if (bloodType == BloodType.ABPositive)
-            return "AB+";
-
-        if (bloodType == BloodType.ABNegative)
-            return "AB-";
-
-        if (bloodType == BloodType.OPositive)
-            return "O+";
-
-        if (bloodType == BloodType.ONegative)
-            return "O-";
-
-        return "Unknown";
+        return bt switch
+        {
+            BloodType.APositive => "A+",
+            BloodType.ANegative => "A-",
+            BloodType.BPositive => "B+",
+            BloodType.BNegative => "B-",
+            BloodType.ABPositive => "AB+",
+            BloodType.ABNegative => "AB-",
+            BloodType.OPositive => "O+",
+            BloodType.ONegative => "O-",
+            BloodType.Unknown => "Невідомо",
+            _ => "Невідомо"
+        };
     }
 
-    public static string FormatSpeciality(Speciality speciality)
+    public static string FormatSpeciality(Speciality s)
     {
-        if (speciality == Speciality.Cardiologist)
-            return "Кардіологія";
-
-        if (speciality == Speciality.Dentist)
-            return "Стоматологія";
-
-        if (speciality == Speciality.Dermatologist)
-            return "Дерматологія";
-
-        if (speciality == Speciality.Neurologist)
-            return "Неврологія";
-
-        if (speciality == Speciality.Pediatrician)
-            return "Педіатрія";
-
-        if (speciality == Speciality.Surgeon)
-            return "Хірургія";
-
-        if (speciality == Speciality.Therapist)
-            return "Терапія";
-
-        return "Невідома спеціальність";
+        return s switch
+        {
+            Speciality.Cardiology => "Кардіологія",
+            Speciality.Neurology => "Неврологія",
+            Speciality.Pediatrics => "Педіатрія",
+            Speciality.Surgery => "Хірургія",
+            Speciality.Orthopedics => "Ортопедія",
+            Speciality.Dermatology => "Дерматологія",
+            Speciality.General => "Загальна",
+            Speciality.Emergency => "Швидка допомога",
+            _ => "Загальна"
+        };
     }
-    
+
     public static string FormatAge(int age)
     {
         int lastTwoDigits = age % 100;
@@ -80,7 +58,7 @@ public static class ClinicFormatter
 
         return $"{age} років";
     }
-    
+
     public static string FormatAge(Patient patient)
     {
         return FormatAge(patient.Age);
@@ -105,7 +83,7 @@ public static class ClinicFormatter
                $"{phone.Substring(3, 3)}-" +
                $"{phone.Substring(6, 4)}";
     }
-    
+
     public static bool TryParsePhone(
         string phone,
         out string formattedPhone)
@@ -129,7 +107,7 @@ public static class ClinicFormatter
 
         return true;
     }
-    
+
     public static bool TryGetAgeInfo(
         Patient patient,
         out int age,

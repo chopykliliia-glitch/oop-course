@@ -56,6 +56,45 @@ public class DoctorManager
         return null;
     }
 
+    public bool TryFindById(int id, out Doctor doctor)
+    {
+        doctor = FindById(id);
+        return doctor != null;
+    }
+    
+    public Doctor[] FindBySpeciality(string speciality)
+    {
+        int foundCount = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (ClinicFormatter
+                .FormatSpeciality(_doctors[i].Speciality)
+                .ToLower()
+                .Contains(speciality.ToLower()))
+            {
+                foundCount++;
+            }
+        }
+
+        Doctor[] result = new Doctor[foundCount];
+
+        int resultIndex = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (ClinicFormatter
+                .FormatSpeciality(_doctors[i].Speciality)
+                .ToLower()
+                .Contains(speciality.ToLower()))
+            {
+                result[resultIndex] = _doctors[i];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
     public Doctor[] FindBySpeciality(Speciality speciality)
     {
         int foundCount = 0;
@@ -197,7 +236,7 @@ public class DoctorManager
             }
 
             Console.WriteLine(
-                $"  {_doctors[i].Speciality}: {specialityCount}");
+                $"  {ClinicFormatter.FormatSpeciality(_doctors[i].Speciality)}: {specialityCount}");
         }
 
         Console.WriteLine("==========================");

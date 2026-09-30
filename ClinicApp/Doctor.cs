@@ -50,7 +50,7 @@ public class Doctor
         : this(
             "Невідомий",
             "Лікар",
-            Speciality.Unknown,
+            Speciality.General,
             "N/A",
             "0000000000")
     {
@@ -105,7 +105,9 @@ public class Doctor
             status = "не в робочий час";
         }
 
-        return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | " +
-               $"Тел: {Phone} | {WorkSchedule} ({WorkingHoursPerDay} год) | {status}";
+        return $"[{Id}] {FullName} | " +
+               $"{ClinicFormatter.FormatSpeciality(Speciality)} | " +
+               $"{LicenseNumber} | Тел: {Phone} | " +
+               $"{WorkSchedule} ({WorkingHoursPerDay} год) | {status}";
     }
 }
