@@ -82,7 +82,7 @@ public class Clinic
 
             Console.WriteLine(
                 $"║    {doctors[i].FullName} " +
-                $"({doctors[i].Speciality}): " +
+                $"({{ClinicFormatter.FormatSpeciality(doctors[i].Speciality)}}): " +
                 $"{appointmentCount} записів");
         }
 
