@@ -1,4 +1,8 @@
 ﻿using ClinicApp;
+using ClinicApp.Enums;
+using ClinicApp.Models;
+using ClinicApp.Managers;
+using ClinicApp.Utils;
 
 Clinic clinic = new Clinic("Медична Клініка");
 
@@ -161,30 +165,43 @@ static void PatientMenu(Clinic clinic)
         }
         else if (choice == "2")
         {
-            Console.Write("Ім'я: ");
-            string firstName = Console.ReadLine()!;
+            try
+            {
+                Console.Write("Ім'я: ");
+                string firstName = Console.ReadLine()!;
 
-            Console.Write("Прізвище: ");
-            string lastName = Console.ReadLine()!;
+                Console.Write("Прізвище: ");
+                string lastName = Console.ReadLine()!;
 
-            Console.Write("Дата народження (рррр-мм-дд): ");
+                Console.Write("Дата народження (рррр-мм-дд): ");
+                DateTime dateOfBirth = DateTime.Parse(Console.ReadLine()!);
 
-            DateTime dateOfBirth =
-                DateTime.Parse(Console.ReadLine()!);
+                BloodType bloodType = ReadBloodType();
 
-            BloodType bloodType = ReadBloodType();
+                Console.Write("Телефон: ");
+                string phone = Console.ReadLine()!;
 
-            Console.Write("Телефон: ");
-            string phone = Console.ReadLine()!;
+                Patient patient = new Patient(
+                    firstName,
+                    lastName,
+                    dateOfBirth,
+                    bloodType,
+                    phone);
 
-            Patient patient = new Patient(
-                firstName,
-                lastName,
-                dateOfBirth,
-                bloodType,
-                phone);
-
-            clinic.Patients.Add(patient);
+                clinic.Patients.Add(patient);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Помилка: невірний формат дати.");
+            }
         }
         else if (choice == "3")
         {
@@ -268,61 +285,55 @@ static void DoctorMenu(Clinic clinic)
         }
         else if (choice == "2")
         {
-            Console.Write("Ім'я: ");
-            string firstName = Console.ReadLine()!;
-
-            Console.Write("Прізвище: ");
-            string lastName = Console.ReadLine()!;
-
-            Speciality speciality = ReadSpeciality();
-
-            Console.Write("Номер ліцензії: ");
-            string licenseNumber = Console.ReadLine()!;
-
-            Console.Write("Телефон: ");
-            string phone = Console.ReadLine()!;
-
-            Doctor doctor = new Doctor(
-                firstName,
-                lastName,
-                speciality,
-                licenseNumber,
-                phone);
-
-            Console.Write("Початок роботи (година): ");
-
-            int workStartHour;
-
-            while (!int.TryParse(
-                       Console.ReadLine(),
-                       out workStartHour) ||
-                   workStartHour < 0 ||
-                   workStartHour > 23)
+            try
             {
-                Console.Write(
-                    "Введіть годину від 0 до 23: ");
+                Console.Write("Ім'я: ");
+                string firstName = Console.ReadLine()!;
+
+                Console.Write("Прізвище: ");
+                string lastName = Console.ReadLine()!;
+
+                Speciality speciality = ReadSpeciality();
+
+                Console.Write("Номер ліцензії: ");
+                string licenseNumber = Console.ReadLine()!;
+
+                Console.Write("Телефон: ");
+                string phone = Console.ReadLine()!;
+
+                Doctor doctor = new Doctor(
+                    firstName,
+                    lastName,
+                    speciality,
+                    licenseNumber,
+                    phone);
+
+                Console.Write("Початок роботи (година): ");
+                int workStartHour;
+                while (!int.TryParse(Console.ReadLine(), out workStartHour))
+                {
+                    Console.Write("Введіть число: ");
+                }
+
+                Console.Write("Кінець роботи (година): ");
+                int workEndHour;
+                while (!int.TryParse(Console.ReadLine(), out workEndHour))
+                {
+                    Console.Write("Введіть число: ");
+                }
+
+                doctor.Schedule = new WorkSchedule(workStartHour, workEndHour);
+
+                clinic.Doctors.Add(doctor);
             }
-
-            Console.Write("Кінець роботи (година): ");
-
-            int workEndHour;
-
-            while (!int.TryParse(
-                       Console.ReadLine(),
-                       out workEndHour) ||
-                   workEndHour < 0 ||
-                   workEndHour > 23 ||
-                   workEndHour <= workStartHour)
+            catch (ArgumentOutOfRangeException e)
             {
-                Console.Write(
-                    "Введіть правильну годину від 0 до 23: ");
+                Console.WriteLine("Помилка: " + e.Message);
             }
-
-            doctor.Schedule = new WorkSchedule(
-                workStartHour,
-                workEndHour);
-
-            clinic.Doctors.Add(doctor);
+            catch (ArgumentException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
         }
         else if (choice == "3")
         {
@@ -440,43 +451,48 @@ static void AppointmentMenu(Clinic clinic)
 
         if (choice == "1")
         {
-            Console.WriteLine();
-            Console.WriteLine("=== Пацієнти ===");
+            try
+            {
+                Console.WriteLine();
+                Console.WriteLine("=== Пацієнти ===");
 
-            clinic.Patients.DisplayAll();
+                clinic.Patients.DisplayAll();
 
-            Console.Write("ID пацієнта: ");
+                Console.Write("ID пацієнта: ");
+                int patientId = int.Parse(Console.ReadLine()!);
 
-            int patientId =
-                int.Parse(Console.ReadLine()!);
+                Console.WriteLine();
+                Console.WriteLine("=== Лікарі ===");
 
-            Console.WriteLine();
-            Console.WriteLine("=== Лікарі ===");
+                clinic.Doctors.DisplayAll();
 
-            clinic.Doctors.DisplayAll();
+                Console.Write("ID лікаря: ");
+                int doctorId = int.Parse(Console.ReadLine()!);
 
-            Console.Write("ID лікаря: ");
+                Console.Write("Дата та час (рррр-мм-дд гг:хх): ");
+                DateTime scheduledAt = DateTime.Parse(Console.ReadLine()!);
 
-            int doctorId =
-                int.Parse(Console.ReadLine()!);
+                Console.Write("Тривалість у хвилинах: ");
+                int durationMinutes = int.Parse(Console.ReadLine()!);
 
-            Console.Write(
-                "Дата та час (рррр-мм-дд гг:хх): ");
-
-            DateTime scheduledAt =
-                DateTime.Parse(Console.ReadLine()!);
-
-            Console.Write(
-                "Тривалість у хвилинах: ");
-
-            int durationMinutes =
-                int.Parse(Console.ReadLine()!);
-
-            clinic.Appointments.Book(
-                patientId,
-                doctorId,
-                scheduledAt,
-                durationMinutes);
+                clinic.Appointments.Book(
+                    patientId,
+                    doctorId,
+                    scheduledAt,
+                    durationMinutes);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Помилка: невірний формат даних.");
+            }
         }
         else if (choice == "2")
         {
