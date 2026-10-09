@@ -1,7 +1,12 @@
+using System.Text.RegularExpressions;
+
 namespace ClinicApp.Utils;
 
 public static class ClinicValidator
 {
+    private static readonly Regex PhoneRegex = new(@"^[0-9]{10}\z");
+    private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+\z");
+
     public static void ValidateName(string value, string fieldName)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -12,15 +17,14 @@ public static class ClinicValidator
 
     public static void ValidatePhone(string phone)
     {
-        if (string.IsNullOrWhiteSpace(phone))
-            throw new ArgumentException("Телефон не може бути порожнім.", "Phone");
-        if (phone.Length != 10)
+        if (string.IsNullOrWhiteSpace(phone) || !PhoneRegex.IsMatch(phone))
             throw new ArgumentException("Телефон має містити рівно 10 цифр.", "Phone");
-        foreach (char c in phone)
-        {
-            if (c < '0' || c > '9')
-                throw new ArgumentException("Телефон має містити лише цифри.", "Phone");
-        }
+    }
+
+    public static void ValidateEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email) || !EmailRegex.IsMatch(email))
+            throw new ArgumentException("Некоректний email.", "Email");
     }
 
     public static void ValidateDate(DateTime value, string fieldName)
