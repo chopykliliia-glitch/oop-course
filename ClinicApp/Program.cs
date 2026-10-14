@@ -1,8 +1,13 @@
-﻿using ClinicApp;
+﻿using System.Globalization;
+using ClinicApp;
 using ClinicApp.Enums;
 using ClinicApp.Models;
 using ClinicApp.Managers;
 using ClinicApp.Utils;
+
+Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 Clinic clinic = new Clinic("Медична Клініка");
 
@@ -76,6 +81,30 @@ clinic.Appointments.Book(
     new DateTime(2026, 9, 25, 9, 0, 0),
     20);
 
+clinic.MedicalRecords.Add(new Diagnosis(
+    1, 1, DateTime.Today.AddDays(-30), "I10", "Гіпертонічна хвороба", true));
+
+clinic.MedicalRecords.Add(new Diagnosis(
+    1, 1, DateTime.Today.AddDays(-5), "J06.9", "Гострий ринофарингіт"));
+
+clinic.MedicalRecords.Add(new LabResult(
+    1, 1, DateTime.Today.AddDays(-14), "Гемоглобін", 145, "г/л", "120–160", true));
+
+clinic.MedicalRecords.Add(new LabResult(
+    1, 1, DateTime.Today.AddDays(-10), "Холестерин", 6.2, "ммоль/л", "< 5.2", false));
+
+clinic.MedicalRecords.Add(new Prescription(
+    1, 1, DateTime.Today.AddDays(-5), "Лізиноприл", "10 мг", 30, "1 раз на добу вранці"));
+
+clinic.MedicalRecords.Add(new Prescription(
+    2, 2, DateTime.Today.AddDays(-40), "Ібупрофен", "200 мг", 10, "після їжі"));
+
+clinic.MedicalRecords.Add(new Diagnosis(
+    2, 2, DateTime.Today.AddDays(-20), "G43.9", "Мігрень"));
+
+clinic.MedicalRecords.Add(new LabResult(
+    3, 3, DateTime.Today.AddDays(-3), "Глюкоза", 4.8, "ммоль/л", "3.9–5.5", true));
+
 while (true)
 {
     Console.WriteLine();
@@ -83,11 +112,12 @@ while (true)
     Console.WriteLine("1 — Пацієнти");
     Console.WriteLine("2 — Лікарі");
     Console.WriteLine("3 — Записи");
-    Console.WriteLine("4 — Розклад");
+    Console.WriteLine("4 — Медична картка");
     Console.WriteLine("5 — Звіт");
-    Console.WriteLine("6 — Тест зростаючого масиву");
-    Console.WriteLine("7 — Тест Task 03");
-    Console.WriteLine("8 — Тест Task 04");
+    Console.WriteLine("6 — Розклад");
+    Console.WriteLine("7 — Тест зростаючого масиву");
+    Console.WriteLine("8 — Тест Task 03");
+    Console.WriteLine("9 — Тест Task 04");
     Console.WriteLine("0 — Вихід");
     Console.WriteLine("==============================");
     Console.Write("Ваш вибір: ");
@@ -108,12 +138,7 @@ while (true)
     }
     else if (choice == "4")
     {
-        Console.Write("Дата (рррр-мм-дд): ");
-
-        DateTime date =
-            DateTime.Parse(Console.ReadLine()!);
-
-        clinic.DisplaySchedule(date);
+        MedicalRecordsMenu(clinic);
     }
     else if (choice == "5")
     {
@@ -121,13 +146,22 @@ while (true)
     }
     else if (choice == "6")
     {
-        GrowablePatientTest();
+        Console.Write("Дата (рррр-мм-дд): ");
+
+        DateTime date =
+            DateTime.Parse(Console.ReadLine()!);
+
+        clinic.DisplaySchedule(date);
     }
     else if (choice == "7")
     {
-        Task03Test(clinic);
+        GrowablePatientTest();
     }
     else if (choice == "8")
+    {
+        Task03Test(clinic);
+    }
+    else if (choice == "9")
     {
         Task04Test(clinic);
     }
@@ -856,4 +890,264 @@ static Speciality ReadSpeciality()
     }
 
     return Speciality.General;
+}
+static bool ReadInt(string prompt, out int value)
+{
+    Console.Write(prompt);
+
+    if (int.TryParse(Console.ReadLine(), out value))
+        return true;
+
+    Console.WriteLine("Помилка: введіть ціле число.");
+    return false;
+}
+
+static bool ReadDouble(string prompt, out double value)
+{
+    Console.Write(prompt);
+
+    if (double.TryParse(Console.ReadLine(), NumberStyles.Float,
+            CultureInfo.InvariantCulture, out value))
+        return true;
+
+    Console.WriteLine("Помилка: введіть число з крапкою, напр. 6.2.");
+    return false;
+}
+
+static bool ReadYesNo(string prompt, out bool value)
+{
+    value = false;
+    Console.Write(prompt);
+
+    string? input = Console.ReadLine();
+
+    if (input == "1")
+    {
+        value = true;
+        return true;
+    }
+
+    if (input == "0")
+        return true;
+
+    Console.WriteLine("Помилка: введіть 1 або 0.");
+    return false;
+}
+
+static bool ReadExistingPatientId(Clinic clinic, out int id)
+{
+    if (!ReadInt("ID пацієнта: ", out id))
+        return false;
+
+    if (clinic.Patients.FindById(id) == null)
+    {
+        Console.WriteLine("Пацієнта з таким ID не знайдено.");
+        return false;
+    }
+
+    return true;
+}
+
+static bool ReadExistingDoctorId(Clinic clinic, out int id)
+{
+    if (!ReadInt("ID лікаря: ", out id))
+        return false;
+
+    if (clinic.Doctors.FindById(id) == null)
+    {
+        Console.WriteLine("Лікаря з таким ID не знайдено.");
+        return false;
+    }
+
+    return true;
+}
+static void MedicalRecordsMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine();
+        Console.WriteLine("========== МЕДИЧНА КАРТКА ==========");
+        Console.WriteLine("1 — Картка пацієнта");
+        Console.WriteLine("2 — Усі записи пацієнта");
+        Console.WriteLine("3 — Додати діагноз");
+        Console.WriteLine("4 — Додати аналіз");
+        Console.WriteLine("5 — Додати рецепт");
+        Console.WriteLine("6 — Записи лікаря");
+        Console.WriteLine("0 — Назад");
+        Console.WriteLine("====================================");
+        Console.Write("Оберіть: ");
+
+        string choice = Console.ReadLine()!;
+
+        if (choice == "1")
+        {
+            clinic.Patients.DisplayAll();
+
+            if (!ReadExistingPatientId(clinic, out int patientId))
+                continue;
+
+            clinic.MedicalRecords.DisplayPatientSummary(patientId);
+        }
+        else if (choice == "2")
+        {
+            clinic.Patients.DisplayAll();
+
+            if (!ReadExistingPatientId(clinic, out int patientId))
+                continue;
+
+            MedicalRecord[] records =
+                clinic.MedicalRecords.GetByPatient(patientId);
+
+            if (records.Length == 0)
+            {
+                Console.WriteLine("У пацієнта немає записів.");
+            }
+            else
+            {
+                for (int i = 0; i < records.Length; i++)
+                {
+                    Console.WriteLine(
+                        $"{records[i].GetRecordType()}: {records[i].GetSummary()}");
+                }
+            }
+        }
+        else if (choice == "3")
+        {
+            try
+            {
+                clinic.Patients.DisplayAll();
+                clinic.Doctors.DisplayAll();
+
+                if (!ReadExistingPatientId(clinic, out int patientId))
+                    continue;
+
+                if (!ReadExistingDoctorId(clinic, out int doctorId))
+                    continue;
+
+                Console.Write("Код діагнозу (напр. J06.9): ");
+                string code = Console.ReadLine()!;
+
+                Console.Write("Опис: ");
+                string description = Console.ReadLine()!;
+
+                if (!ReadYesNo("Хронічне? (1=так, 0=ні): ", out bool isChronic))
+                    continue;
+
+                Diagnosis diagnosis = new Diagnosis(
+                    patientId, doctorId, DateTime.Today,
+                    code, description, isChronic);
+
+                clinic.MedicalRecords.Add(diagnosis);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+        }
+        else if (choice == "4")
+        {
+            try
+            {
+                clinic.Patients.DisplayAll();
+                clinic.Doctors.DisplayAll();
+
+                if (!ReadExistingPatientId(clinic, out int patientId))
+                    continue;
+
+                if (!ReadExistingDoctorId(clinic, out int doctorId))
+                    continue;
+
+                Console.Write("Назва аналізу: ");
+                string testName = Console.ReadLine()!;
+
+                if (!ReadDouble("Значення (число): ", out double value))
+                    continue;
+
+                Console.Write("Одиниці виміру: ");
+                string unit = Console.ReadLine()!;
+
+                Console.Write("Норма (напр. 4.0–9.0): ");
+                string range = Console.ReadLine()!;
+
+                if (!ReadYesNo("В нормі? (1=так, 0=ні): ", out bool isNormal))
+                    continue;
+
+                LabResult lab = new LabResult(
+                    patientId, doctorId, DateTime.Today,
+                    testName, value, unit, range, isNormal);
+
+                clinic.MedicalRecords.Add(lab);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+        }
+        else if (choice == "5")
+        {
+            try
+            {
+                clinic.Patients.DisplayAll();
+                clinic.Doctors.DisplayAll();
+
+                if (!ReadExistingPatientId(clinic, out int patientId))
+                    continue;
+
+                if (!ReadExistingDoctorId(clinic, out int doctorId))
+                    continue;
+
+                Console.Write("Препарат: ");
+                string medication = Console.ReadLine()!;
+
+                Console.Write("Дозування (напр. 10 мг): ");
+                string dosage = Console.ReadLine()!;
+
+                if (!ReadInt("Кількість днів: ", out int days))
+                    continue;
+
+                Console.Write("Інструкція (Enter — пропустити): ");
+                string instructions = Console.ReadLine() ?? "";
+
+                Prescription prescription = new Prescription(
+                    patientId, doctorId, DateTime.Today,
+                    medication, dosage, days, instructions);
+
+                clinic.MedicalRecords.Add(prescription);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+        }
+        else if (choice == "6")
+        {
+            clinic.Doctors.DisplayAll();
+
+            if (!ReadExistingDoctorId(clinic, out int doctorId))
+                continue;
+
+            clinic.MedicalRecords.DisplayList(
+                clinic.MedicalRecords.GetByDoctor(doctorId));
+        }
+        else if (choice == "0")
+        {
+            break;
+        }
+        else
+        {
+            Console.WriteLine("Невірний вибір.");
+        }
+    }
 }
