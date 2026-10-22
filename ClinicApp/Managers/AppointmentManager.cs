@@ -1,6 +1,7 @@
 using ClinicApp.Models;
 using ClinicApp.Enums;
 namespace ClinicApp.Managers;
+using ClinicApp.Interfaces;
 
 public class AppointmentManager
 {
@@ -263,6 +264,31 @@ public class AppointmentManager
         return result;
     }
 
+    public Appointment[] GetAll()
+    {
+        Appointment[] result = new Appointment[_count];
+
+        for (int i = 0; i < _count; i++)
+        {
+            result[i] = _appointments[i];
+        }
+
+        return result;
+    }
+    public static int CancelAll(ICancellable[] items, string reason = "")
+    {
+        int cancelled = 0;
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i].Cancel(reason))
+            {
+                cancelled++;
+            }
+        }
+
+        return cancelled;
+    }
     public void DisplayAppointment(Appointment appointment)
     {
         Patient? patient = _patients.FindById(appointment.PatientId);
