@@ -538,6 +538,7 @@ static void AppointmentMenu(Clinic clinic)
         Console.WriteLine("6 — Скасувати запис");
         Console.WriteLine("7 — Завершити запис");
         Console.WriteLine("8 — Скасувати всі записи пацієнта");
+        Console.WriteLine("9 — За типом прийому");
         Console.WriteLine("0 — Назад");
         Console.WriteLine("============================");
         Console.Write("Ваш вибір: ");
@@ -678,6 +679,35 @@ static void AppointmentMenu(Clinic clinic)
             int cancelled = AppointmentManager.CancelAll(mine, reason);
 
             Console.WriteLine($"Скасовано записів: {cancelled}");
+        }
+        else if (choice == "9")
+        {
+            Console.WriteLine("  1. Термінові");
+            Console.WriteLine("  2. Консультації спеціаліста");
+            Console.WriteLine("  3. Звичайні");
+            Console.Write("Оберіть: ");
+
+            string typeChoice = Console.ReadLine()!;
+
+            if (typeChoice == "1")
+            {
+                clinic.Appointments.DisplayList(
+                    clinic.Appointments.GetUrgent());
+            }
+            else if (typeChoice == "2")
+            {
+                clinic.Appointments.DisplayList(
+                    clinic.Appointments.GetSpecialist());
+            }
+            else if (typeChoice == "3")
+            {
+                clinic.Appointments.DisplayList(
+                    clinic.Appointments.GetRegular());
+            }
+            else
+            {
+                Console.WriteLine("Невірний вибір.");
+            }
         }
         else if (choice == "0")
         {

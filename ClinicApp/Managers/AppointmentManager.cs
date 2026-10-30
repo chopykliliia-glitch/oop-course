@@ -275,6 +275,90 @@ public class AppointmentManager
 
         return result;
     }
+    
+    public Appointment[] GetUrgent()
+    {
+        int foundCount = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is UrgentAppointment)
+            {
+                foundCount++;
+            }
+        }
+
+        Appointment[] result = new Appointment[foundCount];
+
+        int resultIndex = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is UrgentAppointment)
+            {
+                result[resultIndex] = _appointments[i];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
+    public Appointment[] GetSpecialist()
+    {
+        int foundCount = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is SpecialistAppointment)
+            {
+                foundCount++;
+            }
+        }
+
+        Appointment[] result = new Appointment[foundCount];
+
+        int resultIndex = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is SpecialistAppointment)
+            {
+                result[resultIndex] = _appointments[i];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
+    public Appointment[] GetRegular()
+    {
+        int foundCount = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is RegularAppointment)
+            {
+                foundCount++;
+            }
+        }
+
+        Appointment[] result = new Appointment[foundCount];
+
+        int resultIndex = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is RegularAppointment)
+            {
+                result[resultIndex] = _appointments[i];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
 
     public static int CancelAll(ICancellable[] items, string reason = "")
     {
@@ -320,6 +404,7 @@ public class AppointmentManager
 
         string result =
             $"[{appointment.Id}] " +
+            $"{appointment.GetDescription()} | " +
             $"{patientName} → {doctorName} | " +
             $"{appointment.ScheduledAt:dd.MM.yyyy HH:mm}–" +
             $"{appointment.EndsAt:HH:mm} | " +
@@ -329,6 +414,8 @@ public class AppointmentManager
         {
             result += $" | {appointment.Notes}";
         }
+
+        result += $" | {appointment.GetCost().ToString("F2")} грн";
 
         Console.WriteLine(result);
     }
