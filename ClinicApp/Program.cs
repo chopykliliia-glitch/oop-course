@@ -82,6 +82,19 @@ clinic.Appointments.Book(
     new DateTime(2026, 9, 25, 9, 0, 0),
     20);
 
+clinic.Appointments.BookUrgent(
+    2,
+    2,
+    new DateTime(2026, 9, 25, 12, 0, 0),
+    "біль у грудях");
+
+clinic.Appointments.BookSpecialist(
+    1,
+    1,
+    new DateTime(2026, 9, 25, 14, 0, 0),
+    "кардіологія",
+    60);
+
 clinic.MedicalRecords.Add(new Diagnosis(
     1, 1, DateTime.Today.AddDays(-30), "I10", "Гіпертонічна хвороба", true));
 
@@ -106,6 +119,29 @@ clinic.MedicalRecords.Add(new Diagnosis(
 clinic.MedicalRecords.Add(new LabResult(
     3, 3, DateTime.Today.AddDays(-3), "Глюкоза", 4.8, "ммоль/л", "3.9–5.5", true));
 
+
+UrgentAppointment urgentObj = new UrgentAppointment(
+    1, 1, DateTime.Today.AddDays(1).AddHours(14), "тест");
+
+Appointment viaBase = urgentObj;
+UrgentAppointment viaUrgent = urgentObj;
+
+Console.WriteLine("== new vs override ==");
+Console.WriteLine(
+    $"Через Appointment:       {viaBase.GetDescription()} | пріоритет {viaBase.GetPriority()}");
+Console.WriteLine(
+    $"Через UrgentAppointment: {viaUrgent.GetDescription()} | пріоритет {viaUrgent.GetPriority()}");
+
+// 1) Чому GetDescription() через змінну типу Appointment дає опис термінового прийому?
+// Відповідь: Метод virtual, а в UrgentAppointment він override. Тому C# дивиться
+// на тип об'єкта (UrgentAppointment), а не змінної, і виконує версію підкласу.
+//
+// 2) Чому GetPriority() через ту саму змінну повертає 3, хоча об'єкт — UrgentAppointment?
+// Відповідь: Метод не virtual, а в підкласі прихований через new. Такий метод
+// обирається за типом змінної (Appointment), тому повертається 3.
+//
+// 3) Що треба змінити в Appointment і UrgentAppointment, щоб GetPriority() теж працював поліморфно?
+// Відповідь: В Appointment додати virtual, а в UrgentAppointment замінити new на override.
 while (true)
 {
     Console.WriteLine();
