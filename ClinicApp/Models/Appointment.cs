@@ -12,6 +12,8 @@ public class Appointment : IPayable, ICancellable
 
     private bool _isPaid;
 
+    private decimal _discountMultiplier = 1m;
+
     public int Id { get; }
 
     public int PatientId { get; }
@@ -27,6 +29,22 @@ public class Appointment : IPayable, ICancellable
         {
             ClinicValidator.ValidatePositive(value, nameof(DurationMinutes));
             _durationMinutes = value;
+        }
+    }
+
+    public decimal DiscountMultiplier
+    {
+        get => _discountMultiplier;
+        set
+        {
+            if (value <= 0m || value > 1m)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(DiscountMultiplier),
+                    "Множник знижки має бути в межах (0; 1].");
+            }
+
+            _discountMultiplier = value;
         }
     }
 
@@ -77,10 +95,15 @@ public class Appointment : IPayable, ICancellable
         Id = _nextId++;
     }
 
-     public virtual decimal GetCost()
+    // Обрано Варіант А: множник знижки лежить в Appointment, а не в підкласах.
+    // Підкласи рахують ціну як base.GetCost() * своя націнка, тому знижка
+    // автоматично враховується для всіх видів прийому. Нові тарифи (дитячий,
+    // пенсійний) не потребують нових класів: достатньо задати DiscountMultiplier.
+    public virtual decimal GetCost()
     {
-        return DurationMinutes * 10m;
+        return DurationMinutes * 10m * DiscountMultiplier;
     }
+
     public virtual string GetDescription()
     {
         return "Прийом";
