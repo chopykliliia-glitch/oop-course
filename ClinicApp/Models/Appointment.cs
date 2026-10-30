@@ -12,6 +12,8 @@ public class Appointment : IPayable, ICancellable
 
     private bool _isPaid;
 
+    private decimal _discountMultiplier = 1m;
+
     public int Id { get; }
 
     public int PatientId { get; }
@@ -27,6 +29,22 @@ public class Appointment : IPayable, ICancellable
         {
             ClinicValidator.ValidatePositive(value, nameof(DurationMinutes));
             _durationMinutes = value;
+        }
+    }
+
+    public decimal DiscountMultiplier
+    {
+        get => _discountMultiplier;
+        set
+        {
+            if (value <= 0m || value > 1m)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(DiscountMultiplier),
+                    "Множник знижки має бути в межах (0; 1].");
+            }
+
+            _discountMultiplier = value;
         }
     }
 
@@ -77,9 +95,23 @@ public class Appointment : IPayable, ICancellable
         Id = _nextId++;
     }
 
-    public decimal GetCost()
+    // Обрано Варіант А: множник знижки лежить в Appointment, а не в підкласах.
+    // Підкласи рахують ціну як base.GetCost() * своя націнка, тому знижка
+    // автоматично враховується для всіх видів прийому. Нові тарифи (дитячий,
+    // пенсійний) не потребують нових класів: достатньо задати DiscountMultiplier.
+    public virtual decimal GetCost()
     {
-        return DurationMinutes * 10m;
+        return DurationMinutes * 10m * DiscountMultiplier;
+    }
+
+    public virtual string GetDescription()
+    {
+        return "Прийом";
+    }
+
+    public int GetPriority()
+    {
+        return 3;
     }
 
     public void MarkPaid()
@@ -124,13 +156,16 @@ public class Appointment : IPayable, ICancellable
     public override string ToString()
     {
         string result =
-            $"[{Id}] Пацієнт #{PatientId} → Лікар #{DoctorId} | " +
+            $"[{Id}] {GetDescription()} | " +
+            $"Пацієнт #{PatientId} → Лікар #{DoctorId} | " +
             $"{ScheduledAt:dd.MM.yyyy HH:mm}–{EndsAt:HH:mm} | {Status}";
 
         if (Notes.Length > 0)
         {
             result += $" | {Notes}";
         }
+
+        result += $" | {GetCost().ToString("F2")} грн";
 
         return result;
     }
