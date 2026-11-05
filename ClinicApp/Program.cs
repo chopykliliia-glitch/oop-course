@@ -153,7 +153,8 @@ while (true)
     Console.WriteLine("║  3. Записи         — прийоми, скасування     ║");
     Console.WriteLine("║  4. Медична картка — діагнози, рецепти       ║");
     Console.WriteLine("║  5. Рахунки        — оплата, борги           ║");
-    Console.WriteLine("║  6. Звіт           — загальна статистика     ║");
+    Console.WriteLine("║  6. Черга          — очікування, прийом      ║");
+    Console.WriteLine("║  7. Звіт           — загальна статистика     ║");
     Console.WriteLine("║  0. Вийти                                    ║");
     Console.WriteLine("╚══════════════════════════════════════════════╝");
     Console.Write("Оберіть розділ: ");
@@ -181,6 +182,10 @@ while (true)
         BillingMenu(clinic);
     }
     else if (choice == "6")
+    {
+        WaitingRoomMenu(clinic);
+    }
+    else if (choice == "7")
     {
         clinic.GenerateReport();
     }
@@ -1080,6 +1085,94 @@ static void MedicalRecordsMenu(Clinic clinic)
 
             clinic.MedicalRecords.DisplayList(
                 clinic.MedicalRecords.GetByDoctor(doctorId));
+        }
+        else if (choice == "0")
+        {
+            break;
+        }
+        else
+        {
+            Console.WriteLine("Невірний вибір.");
+        }
+    }
+}
+
+static void WaitingRoomMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine();
+        Console.WriteLine("── Черга ───────────────────────");
+        Console.WriteLine("  1. Додати пацієнта до черги");
+        Console.WriteLine("  2. Прийняти першого");
+        Console.WriteLine("  3. Хто перший?");
+        Console.WriteLine("  4. Переглянути всю чергу");
+        Console.WriteLine("  0. Назад");
+        Console.Write("Оберіть: ");
+
+        string choice = Console.ReadLine()!;
+
+        if (choice == "1")
+        {
+            clinic.Patients.DisplayAll();
+
+            if (!ReadInt("ID пацієнта: ", out int id))
+                continue;
+
+            Patient? patient = clinic.Patients.FindById(id);
+
+            if (patient == null)
+            {
+                Console.WriteLine("Пацієнта не знайдено.");
+            }
+            else
+            {
+                clinic.WaitingRoom.Enqueue(patient);
+                Console.WriteLine($"{patient.FullName} додано до черги.");
+            }
+        }
+        else if (choice == "2")
+        {
+            try
+            {
+                Patient next = clinic.WaitingRoom.Dequeue();
+
+                Console.WriteLine(
+                    $"Прийнято: {next.FullName}. У черзі лишилось: {clinic.WaitingRoom.Count}");
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+        }
+        else if (choice == "3")
+        {
+            try
+            {
+                Patient first = clinic.WaitingRoom.Peek();
+
+                Console.WriteLine($"Першим іде: {first.FullName}");
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine("Помилка: " + e.Message);
+            }
+        }
+        else if (choice == "4")
+        {
+            Patient[] queue = clinic.WaitingRoom.ToArray();
+
+            if (queue.Length == 0)
+            {
+                Console.WriteLine("Черга порожня.");
+            }
+            else
+            {
+                for (int i = 0; i < queue.Length; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {queue[i].FullName}");
+                }
+            }
         }
         else if (choice == "0")
         {
