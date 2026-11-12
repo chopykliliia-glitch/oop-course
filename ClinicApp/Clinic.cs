@@ -20,6 +20,8 @@ public class Clinic
 
     public AnalyticsManager Analytics { get; }
 
+    public TreatmentPlanManager TreatmentPlans { get; }
+
     public Clinic(string name)
     {
         Name = name;
@@ -42,6 +44,8 @@ public class Clinic
             Appointments,
             Doctors,
             Patients);
+
+        TreatmentPlans = new TreatmentPlanManager();
     }
 
     public void DisplaySchedule(DateTime date)
