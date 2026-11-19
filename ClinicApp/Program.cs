@@ -1478,6 +1478,7 @@ static void FilesMenu(Clinic clinic)
         Console.WriteLine("── Файли ───────────────────────");
         Console.WriteLine("  1. Останні рядки лога");
         Console.WriteLine("  2. Очистити лог");
+        Console.WriteLine("  3. Експортувати всі звіти");
         Console.WriteLine("  0. Назад");
         Console.Write("Оберіть: ");
 
@@ -1506,6 +1507,31 @@ static void FilesMenu(Clinic clinic)
         {
             clinic.Logger.Clear();
             Console.WriteLine("Лог очищено.");
+        }
+        else if (choice == "3")
+        {
+            try
+            {
+                string[] paths = clinic.Exporter.ExportAll();
+
+                Console.WriteLine("Звіти збережено:");
+                for (int i = 0; i < paths.Length; i++)
+                {
+                    Console.WriteLine("  " + paths[i]);
+                }
+
+                clinic.Logger.LogInfo($"Експортовано звіти: {paths.Length} файлів");
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Помилка запису файлів: " + e.Message);
+                clinic.Logger.LogError("Експорт звітів: " + e.Message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine("Немає доступу до теки: " + e.Message);
+                clinic.Logger.LogError("Експорт звітів: " + e.Message);
+            }
         }
         else if (choice == "0")
         {
