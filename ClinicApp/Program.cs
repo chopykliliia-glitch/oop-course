@@ -357,6 +357,31 @@ static void PatientMenu(Clinic clinic)
         }
         else if (choice == "0")
         {
+            Console.Write("Зберегти сесію? (y/n): ");
+            string saveAnswer = (Console.ReadLine() ?? "").Trim().ToLower();
+
+            if (saveAnswer == "y")
+            {
+                try
+                {
+                    clinic.Session.Save(clinic);
+
+                    Console.WriteLine("Сесію збережено.");
+                    clinic.Logger.LogInfo("Сесію збережено");
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine("Не вдалося зберегти сесію: " + e.Message);
+                    clinic.Logger.LogError("Збереження сесії: " + e.Message);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Console.WriteLine("Немає доступу до файлу сесії: " + e.Message);
+                    clinic.Logger.LogError("Збереження сесії: " + e.Message);
+                }
+            }
+
+            Console.WriteLine("Програму завершено.");
             break;
         }
         else
