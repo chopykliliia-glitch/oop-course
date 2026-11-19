@@ -26,6 +26,8 @@ public class Clinic
     public ClinicLogger Logger { get; }
     
     public ClinicExporter Exporter { get; }
+    
+    public SessionManager Session { get; }
 
     public Clinic(string name)
     {
@@ -55,6 +57,8 @@ public class Clinic
         Logger = new ClinicLogger();
         
         Exporter = new ClinicExporter(this);
+        
+        Session = new SessionManager();
     }
 
     public void DisplaySchedule(DateTime date)

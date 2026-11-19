@@ -143,6 +143,35 @@ Console.WriteLine(
 //
 // 3) Що треба змінити в Appointment і UrgentAppointment, щоб GetPriority() теж працював поліморфно?
 // Відповідь: В Appointment додати virtual, а в UrgentAppointment замінити new на override.
+
+{
+    if (clinic.Session.Exists())
+    {
+        Console.Write("Знайдено збережену сесію. Завантажити? (y/n): ");
+        string loadAnswer = (Console.ReadLine() ?? "").Trim().ToLower();
+
+        if (loadAnswer == "y")
+        {
+            try
+            {
+                int loaded = clinic.Session.Load(clinic);
+
+                Console.WriteLine($"Завантажено {loaded} пацієнтів.");
+                clinic.Logger.LogInfo($"Завантажено сесію: {loaded} пацієнтів");
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Не вдалося прочитати сесію: " + e.Message);
+                clinic.Logger.LogError("Завантаження сесії: " + e.Message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine("Немає доступу до файлу сесії: " + e.Message);
+                clinic.Logger.LogError("Завантаження сесії: " + e.Message);
+            }
+        }
+    }
+}
 while (true)
 {
     Console.WriteLine();
