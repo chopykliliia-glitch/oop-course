@@ -6,12 +6,15 @@ using ClinicApp.Models;
 using ClinicApp.Managers;
 using ClinicApp.Utils;
 using ClinicApp.Comparators;
+using ClinicApp.Events;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 Clinic clinic = new Clinic("Медична Клініка");
+
+clinic.Appointments.AppointmentBooked += OnAppointmentBookedConsole;
 
 clinic.Patients.Add(new Patient(
     "Іван",
@@ -1610,4 +1613,10 @@ static void FilesMenu(Clinic clinic)
             Console.WriteLine("Невірний вибір.");
         }
     }
+}
+static void OnAppointmentBookedConsole(object? sender, AppointmentEventArgs e)
+{
+    Console.WriteLine(
+        $"  [EVENT] Запис #{e.AppointmentId} створено: пацієнт #{e.PatientId} → " +
+        $"лікар #{e.DoctorId}, {e.ScheduledAt:dd.MM.yyyy HH:mm}");
 }

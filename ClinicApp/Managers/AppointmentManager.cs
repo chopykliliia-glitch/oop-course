@@ -1,7 +1,9 @@
 using ClinicApp.Models;
 using ClinicApp.Enums;
-namespace ClinicApp.Managers;
+using ClinicApp.Events;
 using ClinicApp.Interfaces;
+
+namespace ClinicApp.Managers;
 
 public class AppointmentManager
 {
@@ -14,6 +16,8 @@ public class AppointmentManager
 
     private PatientManager _patients;
     private DoctorManager _doctors;
+
+    public event EventHandler<AppointmentEventArgs>? AppointmentBooked;
 
     public int Count
     {
@@ -275,7 +279,7 @@ public class AppointmentManager
 
         return result;
     }
-    
+
     public Appointment[] GetUrgent()
     {
         int foundCount = 0;
@@ -446,7 +450,7 @@ public class AppointmentManager
 
         return null;
     }
-    
+
     private bool AddAppointment(Appointment appointment)
     {
         Patient? patient = _patients.FindById(appointment.PatientId);
@@ -483,6 +487,18 @@ public class AppointmentManager
             $"{patient.FullName} → {doctor.FullName} " +
             $"о {appointment.ScheduledAt:dd.MM.yyyy HH:mm}");
 
+        AppointmentBooked?.Invoke(this, CreateArgs(appointment));
+
         return true;
+    }
+
+    private static AppointmentEventArgs CreateArgs(Appointment appointment)
+    {
+        return new AppointmentEventArgs(
+            appointment.Id,
+            appointment.PatientId,
+            appointment.DoctorId,
+            appointment.ScheduledAt,
+            appointment.Notes);
     }
 }
