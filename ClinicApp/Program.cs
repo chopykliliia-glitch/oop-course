@@ -239,6 +239,21 @@ while (true)
     }
     else if (choice == "0")
     {
+        clinic.Tracker.PrintSummary();
+
+        try
+        {
+            clinic.Tracker.SaveSummary();
+        }
+        catch (IOException e)
+        {
+            Console.WriteLine("Не вдалося зберегти підсумок: " + e.Message);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Console.WriteLine("Немає доступу до файлу підсумку: " + e.Message);
+        }
+
         Console.WriteLine("Програму завершено.");
         break;
     }
