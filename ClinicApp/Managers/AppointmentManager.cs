@@ -18,6 +18,9 @@ public class AppointmentManager
     private DoctorManager _doctors;
 
     public event EventHandler<AppointmentEventArgs>? AppointmentBooked;
+    public event EventHandler<AppointmentEventArgs>? AppointmentCancelled;
+    public event EventHandler<AppointmentEventArgs>? AppointmentCompleted;
+    public event EventHandler<AppointmentEventArgs>? UrgentAppointmentBooked;
 
     public int Count
     {
@@ -77,7 +80,14 @@ public class AppointmentManager
             urgencyNote,
             durationMinutes);
 
-        return AddAppointment(appointment);
+        bool booked = AddAppointment(appointment);
+
+        if (booked)
+        {
+            UrgentAppointmentBooked?.Invoke(this, CreateArgs(appointment));
+        }
+
+        return booked;
     }
 
     public bool BookSpecialist(
@@ -114,6 +124,8 @@ public class AppointmentManager
         if (result)
         {
             Console.WriteLine($"Запис [{id}] скасовано.");
+
+            AppointmentCancelled?.Invoke(this, CreateArgs(appointment));
         }
         else
         {
@@ -141,6 +153,8 @@ public class AppointmentManager
         if (result)
         {
             Console.WriteLine($"Запис [{id}] завершено.");
+
+            AppointmentCompleted?.Invoke(this, CreateArgs(appointment));
         }
         else
         {
@@ -364,7 +378,8 @@ public class AppointmentManager
         return result;
     }
 
-    public static int CancelAll(ICancellable[] items, string reason = "")
+    // Більше не static: подія належить екземпляру менеджера.
+    public int CancelAll(ICancellable[] items, string reason = "")
     {
         int cancelled = 0;
 
@@ -373,6 +388,11 @@ public class AppointmentManager
             if (items[i].Cancel(reason))
             {
                 cancelled++;
+
+                if (items[i] is Appointment appointment)
+                {
+                    AppointmentCancelled?.Invoke(this, CreateArgs(appointment));
+                }
             }
         }
 
