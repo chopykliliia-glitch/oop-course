@@ -6,12 +6,15 @@ using ClinicApp.Models;
 using ClinicApp.Managers;
 using ClinicApp.Utils;
 using ClinicApp.Comparators;
+using ClinicApp.Events;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 Clinic clinic = new Clinic("Медична Клініка");
+
+clinic.Appointments.AppointmentBooked += OnAppointmentBookedConsole;
 
 clinic.Patients.Add(new Patient(
     "Іван",
@@ -236,6 +239,21 @@ while (true)
     }
     else if (choice == "0")
     {
+        clinic.Tracker.PrintSummary();
+
+        try
+        {
+            clinic.Tracker.SaveSummary();
+        }
+        catch (IOException e)
+        {
+            Console.WriteLine("Не вдалося зберегти підсумок: " + e.Message);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Console.WriteLine("Немає доступу до файлу підсумку: " + e.Message);
+        }
+
         Console.WriteLine("Програму завершено.");
         break;
     }
@@ -292,8 +310,6 @@ static void PatientMenu(Clinic clinic)
                     phone);
 
                 clinic.Patients.Add(patient);
-                clinic.Logger.LogInfo(
-                    $"Додано пацієнта #{patient.Id}: {patient.FullName}");
             }
             catch (ArgumentOutOfRangeException e)
             {
@@ -660,10 +676,6 @@ static void AppointmentMenu(Clinic clinic)
                     doctorId,
                     scheduledAt,
                     durationMinutes);
-
-                clinic.Logger.LogInfo(
-                    $"Запис створено: пацієнт #{patientId} → лікар #{doctorId}, " +
-                    $"{scheduledAt:yyyy-MM-dd HH:mm}");
             }
             catch (ArgumentOutOfRangeException e)
             {
@@ -748,8 +760,6 @@ static void AppointmentMenu(Clinic clinic)
             clinic.Appointments.Cancel(
                 id,
                 reason);
-
-            clinic.Logger.LogInfo($"Запис #{id} скасовано. Причина: {reason}");
         }
         else if (choice == "7")
         {
@@ -757,8 +767,6 @@ static void AppointmentMenu(Clinic clinic)
                 continue;
 
             clinic.Appointments.Complete(id);
-
-            clinic.Logger.LogInfo($"Запис #{id} завершено");
         }
         else if (choice == "8")
         {
@@ -771,12 +779,9 @@ static void AppointmentMenu(Clinic clinic)
             Appointment[] mine =
                 clinic.Appointments.GetByPatient(patientId);
 
-            int cancelled = AppointmentManager.CancelAll(mine, reason);
+            int cancelled = clinic.Appointments.CancelAll(mine, reason);
 
             Console.WriteLine($"Скасовано записів: {cancelled}");
-
-            clinic.Logger.LogInfo(
-                $"Скасовано записів пацієнта #{patientId}: {cancelled}");
         }
         else if (choice == "9")
         {
@@ -861,7 +866,6 @@ static void BillingMenu(Clinic clinic)
             if (clinic.Billing.PayAppointment(appointmentId))
             {
                 Console.WriteLine($"Запис [{appointmentId}] оплачено.");
-                clinic.Logger.LogInfo($"Оплачено запис #{appointmentId}");
             }
             else
             {
@@ -1478,7 +1482,7 @@ static void TreatmentPlanMenu(Clinic clinic)
             {
                 Console.WriteLine("План не знайдено.");
             }
-            else if (plan.Complete())
+            else if (clinic.TreatmentPlans.Complete(id))
             {
                 Console.WriteLine($"План [{id}] завершено.");
             }
@@ -1610,4 +1614,10 @@ static void FilesMenu(Clinic clinic)
             Console.WriteLine("Невірний вибір.");
         }
     }
+}
+static void OnAppointmentBookedConsole(object? sender, AppointmentEventArgs e)
+{
+    Console.WriteLine(
+        $"  [EVENT] Запис #{e.AppointmentId} створено: пацієнт #{e.PatientId} → " +
+        $"лікар #{e.DoctorId}, {e.ScheduledAt:dd.MM.yyyy HH:mm}");
 }
