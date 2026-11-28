@@ -21,6 +21,8 @@ public class Clinic
     public WaitingQueue<Patient> WaitingRoom { get; }
 
     public AnalyticsManager Analytics { get; }
+    
+    public ReportManager Reports { get; }
 
     public TreatmentPlanManager TreatmentPlans { get; }
 
@@ -53,6 +55,11 @@ public class Clinic
         WaitingRoom = new WaitingQueue<Patient>();
 
         Analytics = new AnalyticsManager(
+            Appointments,
+            Doctors,
+            Patients);
+        
+        Reports = new ReportManager(
             Appointments,
             Doctors,
             Patients);
